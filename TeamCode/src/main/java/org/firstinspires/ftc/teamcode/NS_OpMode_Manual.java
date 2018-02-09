@@ -18,7 +18,7 @@ public class NS_OpMode_Manual extends LinearOpMode {
         static final double TENTH = 0.10;
     }
     private enum DriveMode {
-        RC_DRIVE, TANK_DRIVE
+        RC_DRIVE, TANK_DRIVE, MC_DRIVE
     }
     NS_Robot_GoldenGears GGRobot = null;
     DriveMode driveMode = DriveMode.RC_DRIVE;
@@ -44,6 +44,10 @@ public class NS_OpMode_Manual extends LinearOpMode {
             else if (gamepad1.left_stick_button == true) {
                 driveMode = DriveMode.TANK_DRIVE;
                 telemetry.addData("Drive Mode", "Changed to Tank Drive");
+            }
+            else if (gamepad1.right_trigger) {
+                driveMode = DriveMode.MC_DRIVE;
+                telemetry.addData("Drive Mode", "Changed to MC Drive");
             }
 
             if (gamepad1.a == true) {
@@ -71,9 +75,15 @@ public class NS_OpMode_Manual extends LinearOpMode {
                 leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
                 rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
             }
-            else {
+            else if (driveMode == DriveMode.TANK_DRIVE){
                 leftPower = -gamepad1.left_stick_y;
                 rightPower = -gamepad1.right_stick_y;
+            }
+            else if (driveMode == DriveMode.MC_DRIVE){
+                double drive = -gamepad1.left_stick_y;
+                double turn  =  gamepad1.left_stick_x;
+                leftPower    = Range.clip(drive + turn, -1.0, 1.0);
+                rightPower   = Range.clip(drive - turn, -1.0, 1.0);
             }
             GGRobot.DriveTank(leftPower * driveRegulator,
                     rightPower * driveRegulator);
